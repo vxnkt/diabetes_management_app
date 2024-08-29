@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "236417618816",
+    "project_id": "appathon-9530d",
+    "storage_bucket": "appathon-9530d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:236417618816:android:69017f8d44c6a2aa3d6765",
+        "android_client_info": {
+          "package_name": "com.example.diabetes_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAHromEuLe8BwRqBtiw6N4pY6DWle_ZWbA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
