@@ -7,9 +7,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:236417618816:android:69017f8d44c6a2aa3d6765",
+        "mobilesdk_app_id": "1:236417618816:android:26dc7ed498291d533d6765",
         "android_client_info": {
-          "package_name": "com.example.diabetes_app"
+          "package_name": "com.example.appathon"
         }
       },
       "oauth_client": [],
