@@ -18,6 +18,14 @@ class _HomePageState extends State<HomePage> {
   double rbs = 0.0;
   int daysCounter = 0; // Keep track of days for x-axis
 
+  int _selectedIndex = 0; // Track the selected tab
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index; // Update selected index
+    });
+  }
+
   void _showInputDialog() {
     showDialog(
       context: context,
@@ -27,20 +35,22 @@ class _HomePageState extends State<HomePage> {
 
         return AlertDialog(
           title: Text("Enter Lab Values"),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: hba1cController,
-                decoration: InputDecoration(labelText: 'HbA1c'),
-                keyboardType: TextInputType.number,
-              ),
-              TextField(
-                controller: rbsController,
-                decoration: InputDecoration(labelText: 'RBS'),
-                keyboardType: TextInputType.number,
-              ),
-            ],
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: hba1cController,
+                  decoration: InputDecoration(labelText: 'HbA1c'),
+                  keyboardType: TextInputType.number,
+                ),
+                TextField(
+                  controller: rbsController,
+                  decoration: InputDecoration(labelText: 'RBS'),
+                  keyboardType: TextInputType.number,
+                ),
+              ],
+            ),
           ),
           actions: [
             TextButton(
@@ -87,7 +97,11 @@ class _HomePageState extends State<HomePage> {
                 padding:
                     EdgeInsets.only(top: 15, left: 15, right: 15, bottom: 10),
                 decoration: BoxDecoration(
-                  color: kPrimaryColor,
+                  gradient: LinearGradient(
+                    colors: [Colors.blueAccent, Colors.lightBlueAccent],
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                  ),
                   borderRadius: BorderRadius.only(
                     bottomLeft: Radius.circular(20),
                     bottomRight: Radius.circular(20),
@@ -257,26 +271,45 @@ class _HomePageState extends State<HomePage> {
                   ],
                 ),
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  TextButton(
-                    onPressed: () {},
-                    child: Text(
-                      "Medical History",
-                    ),
-                  ),
-                ],
-              ),
               SizedBox(
                 height: 60,
               ),
             ],
           ),
           Positioned(
-            bottom: 100,
-            left: MediaQuery.of(context).size.width / 2 -
-                60, // Center the circular widget
+            bottom: 170,
+            left: 20,
+            right: 20, // Position the buttons evenly
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                _buildActionButton(
+                  icon: Icons.quiz,
+                  label: 'Quiz',
+                  onTap: () {
+                    // Handle Quiz button tap
+                  },
+                ),
+                _buildActionButton(
+                  icon: Icons.history,
+                  label: 'Medical History',
+                  onTap: () {
+                    // Handle Medical History button tap
+                  },
+                ),
+                _buildActionButton(
+                  icon: Icons.help_outline,
+                  label: 'FAQ',
+                  onTap: () {
+                    // Handle FAQ button tap
+                  },
+                ),
+              ],
+            ),
+          ),
+          Positioned(
+            bottom: 30,
+            left: MediaQuery.of(context).size.width / 2 - 60,
             child: Column(
               children: [
                 GestureDetector(
@@ -284,29 +317,22 @@ class _HomePageState extends State<HomePage> {
                     FlutterPhoneDirectCaller.callNumber('+123123213');
                   },
                   child: Container(
-                    width: 120, // Size of the circular widget
+                    width: 120,
                     height: 120,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color:
-                          Colors.greenAccent, // Background color of the circle
+                      gradient: LinearGradient(
+                        colors: [Colors.greenAccent, Colors.tealAccent],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
                     ),
                     child: Center(
                       child: Icon(
                         Icons.call,
-                        size: 50, // Size of the call icon
-                        color: Colors.white,
+                        size: 40,
                       ),
                     ),
-                  ),
-                ),
-                SizedBox(height: 10), // Spacing between button and text
-                Text(
-                  "Emergency Call",
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.red,
                   ),
                 ),
               ],
@@ -314,6 +340,57 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.local_hospital_outlined),
+            label: 'Doctors',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.settings),
+            label: 'Settings',
+          ),
+        ],
+        currentIndex: _selectedIndex,
+        onTap: _onItemTapped,
+        selectedItemColor: Colors.blue, // Set color for selected item
+      ),
+    );
+  }
+
+  Widget _buildActionButton(
+      {required IconData icon,
+      required String label,
+      required Function onTap}) {
+    return Column(
+      children: [
+        GestureDetector(
+          onTap: () => onTap(),
+          child: Container(
+            width: 50,
+            height: 50,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: LinearGradient(
+                colors: [Colors.blueAccent, Colors.lightBlueAccent],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+            ),
+            child: Icon(
+              icon,
+              size: 30,
+              color: Colors.white,
+            ),
+          ),
+        ),
+        SizedBox(height: 10),
+        Text(label),
+      ],
     );
   }
 }
