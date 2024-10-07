@@ -1,30 +1,23 @@
-import 'package:appathon/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 import 'package:intl/intl.dart'; // For handling dates
+import 'package:appathon/utils/colors.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+
+class HomesScreen extends StatefulWidget {
+  const HomesScreen({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<HomesScreen> createState() => _HomesScreenState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomesScreenState extends State<HomesScreen> {
   List<FlSpot> hba1cDataPoints = [];
   List<FlSpot> rbsDataPoints = []; // Store the graph points
   double hba1c = 0.0;
   double rbs = 0.0;
-  int daysCounter = 0; // Keep track of days for x-axis
+  int daysCounter = 0;  // Keep track of days for x-axis
 
-  int _selectedIndex = 0; // Track the selected tab
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index; // Update selected index
-    });
-  }
 
   void _showInputDialog() {
     showDialog(
@@ -70,6 +63,13 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  String _formatDateLabel(double value) {
+    final DateTime startDate =
+    DateTime.now().subtract(Duration(days: daysCounter));
+    final DateTime date = startDate.add(Duration(days: value.toInt()));
+    return DateFormat('MM/dd').format(date); // Format date as 'MM/dd'
+  }
+
   void _updateGraph() {
     // Update the graph with new points
     setState(() {
@@ -77,13 +77,6 @@ class _HomePageState extends State<HomePage> {
       rbsDataPoints.add(FlSpot(daysCounter.toDouble(), rbs));
       daysCounter++; // Increment days for next input
     });
-  }
-
-  String _formatDateLabel(double value) {
-    final DateTime startDate =
-        DateTime.now().subtract(Duration(days: daysCounter));
-    final DateTime date = startDate.add(Duration(days: value.toInt()));
-    return DateFormat('MM/dd').format(date); // Format date as 'MM/dd'
   }
 
   @override
@@ -95,7 +88,7 @@ class _HomePageState extends State<HomePage> {
             children: [
               Container(
                 padding:
-                    EdgeInsets.only(top: 15, left: 15, right: 15, bottom: 10),
+                EdgeInsets.only(top: 15, left: 15, right: 15, bottom: 10),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [Colors.blueAccent, Colors.lightBlueAccent],
@@ -186,7 +179,7 @@ class _HomePageState extends State<HomePage> {
                           sideTitles: SideTitles(
                             showTitles: true,
                             interval:
-                                1, // Show X-axis labels only for each point
+                            1, // Show X-axis labels only for each point
                             getTitlesWidget: (value, meta) {
                               if (value.toInt() >= 0 &&
                                   value.toInt() < hba1cDataPoints.length) {
@@ -196,7 +189,7 @@ class _HomePageState extends State<HomePage> {
                                       .add(Duration(days: value.toInt()))),
                                   style: TextStyle(
                                       fontSize:
-                                          10), // Styling for X-axis labels
+                                      10), // Styling for X-axis labels
                                 );
                               }
                               return Container(); // Hide labels for non-existent points
@@ -276,121 +269,40 @@ class _HomePageState extends State<HomePage> {
               ),
             ],
           ),
-          Positioned(
-            bottom: 170,
-            left: 20,
-            right: 20, // Position the buttons evenly
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                _buildActionButton(
-                  icon: Icons.quiz,
-                  label: 'Quiz',
-                  onTap: () {
-                    // Handle Quiz button tap
-                  },
-                ),
-                _buildActionButton(
-                  icon: Icons.history,
-                  label: 'Medical History',
-                  onTap: () {
-                    // Handle Medical History button tap
-                  },
-                ),
-                _buildActionButton(
-                  icon: Icons.help_outline,
-                  label: 'FAQ',
-                  onTap: () {
-                    // Handle FAQ button tap
-                  },
-                ),
-              ],
-            ),
-          ),
-          Positioned(
-            bottom: 30,
-            left: MediaQuery.of(context).size.width / 2 - 60,
-            child: Column(
-              children: [
-                GestureDetector(
-                  onTap: () {
-                    FlutterPhoneDirectCaller.callNumber('+123123213');
-                  },
-                  child: Container(
-                    width: 120,
-                    height: 120,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      gradient: LinearGradient(
-                        colors: [Colors.greenAccent, Colors.tealAccent],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                    ),
-                    child: Center(
-                      child: Icon(
-                        Icons.call,
-                        size: 40,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.local_hospital_outlined),
-            label: 'Doctors',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: 'Settings',
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
-        selectedItemColor: Colors.blue, // Set color for selected item
-      ),
-    );
-  }
+          // Positioned(
+          //   bottom: 170,
+          //   left: 20,
+          //   right: 20, // Position the buttons evenly
+          //   child: Row(
+          //     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          //     children: [
+          //       _buildActionButton(
+          //         icon: Icons.quiz,
+          //         label: 'Quiz',
+          //         onTap: () {
+          //           // Handle Quiz button tap
+          //         },
+          //       ),
+          //       _buildActionButton(
+          //         icon: Icons.history,
+          //         label: 'Medical History',
+          //         onTap: () {
+          //           // Handle Medical History button tap
+          //         },
+          //       ),
+          //       _buildActionButton(
+          //         icon: Icons.help_outline,
+          //         label: 'FAQ',
+          //         onTap: () {
+          //           // Handle FAQ button tap
+          //         },
+          //       ),
+          //     ],
+          //   ),
+          // ),
 
-  Widget _buildActionButton(
-      {required IconData icon,
-      required String label,
-      required Function onTap}) {
-    return Column(
-      children: [
-        GestureDetector(
-          onTap: () => onTap(),
-          child: Container(
-            width: 50,
-            height: 50,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: LinearGradient(
-                colors: [Colors.blueAccent, Colors.lightBlueAccent],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-            ),
-            child: Icon(
-              icon,
-              size: 30,
-              color: Colors.white,
-            ),
-          ),
-        ),
-        SizedBox(height: 10),
-        Text(label),
-      ],
+        ],
+      ),
     );
   }
 }
