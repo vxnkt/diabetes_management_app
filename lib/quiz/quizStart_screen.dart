@@ -7,6 +7,7 @@ class QuizStartScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(title: Text('Quiz')),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -33,7 +34,8 @@ class QuizStartScreen extends StatelessWidget {
           ),
           GestureDetector(
             onTap: () {
-              Navigator.of(context).push(MaterialPageRoute(builder: (context) => QuizNavigator()));
+              Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) => QuizNavigator()));
             },
             child: Center(
               child: Container(
