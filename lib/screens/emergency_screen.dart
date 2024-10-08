@@ -13,6 +13,7 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFEEEFF5),
       appBar: AppBar(
         centerTitle: true,
         backgroundColor: const Color(0xFFEEEFF5),
@@ -66,14 +67,15 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   gradient: LinearGradient(
-                    colors: [Colors.greenAccent, Colors.tealAccent],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
+                    colors: [Colors.deepPurple, Colors.deepPurpleAccent],
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
                   ),
                 ),
                 child: Icon(
                   Icons.call,
                   size: 45,
+                  color: Colors.white,
                 ),
               ),
             ),
