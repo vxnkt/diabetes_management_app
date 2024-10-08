@@ -2,6 +2,7 @@ import 'package:appathon/quiz/quizStart_screen.dart';
 import 'package:appathon/screens/doctor_screen.dart';
 import 'package:appathon/screens/emergency_screen.dart';
 import 'package:appathon/screens/homescreen.dart';
+import 'package:appathon/screens/profile_page.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
@@ -25,7 +26,7 @@ class _HomePageState extends State<HomePage> {
     DoctorScreen(),
     EmergencyScreen(),
     QuizStartScreen(),
-    Text('Profile Page', style: TextStyle(fontSize: 24)),
+    ProfilePage(),
   ];
 
   @override
