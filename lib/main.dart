@@ -1,5 +1,5 @@
-import 'package:appathon/home_page.dart';
 import 'package:appathon/quiz/quizStart_screen.dart';
+import 'package:appathon/screens/home_page.dart';
 import 'package:flutter/material.dart';
 
 void main() {
