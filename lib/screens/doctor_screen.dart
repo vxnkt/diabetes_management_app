@@ -1,3 +1,4 @@
+import 'package:appathon/screens/request_details_page.dart';
 import 'package:flutter/material.dart';
 
 class DoctorScreen extends StatefulWidget {
@@ -50,13 +51,6 @@ class _DoctorScreenState extends State<DoctorScreen> {
                           fontWeight: FontWeight.w600,
                           fontSize: 15),
                     ),
-                    Spacer(),
-                    Text(
-                      '11th October, 2024',
-                      style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w300),
-                    ),
                   ],
                 ),
                 Padding(
@@ -78,7 +72,9 @@ class _DoctorScreenState extends State<DoctorScreen> {
                   MainAxisAlignment.spaceEvenly,
                   children: [
                     GestureDetector(
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.of(context).push(MaterialPageRoute(builder: (context) => RequestDetailsPage()));
+                      },
                       child: Center(
                         child: Container(
                           width: MediaQuery.of(context)
@@ -93,13 +89,20 @@ class _DoctorScreenState extends State<DoctorScreen> {
                           margin: EdgeInsets.symmetric(
                               vertical: 10),
                           decoration: BoxDecoration(
-                              color: Colors.deepPurple,
+                              gradient: const LinearGradient(
+                                colors: [
+                                  Colors.deepPurple,
+                                  Colors.deepPurpleAccent
+                                ],
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter,
+                              ),
                               borderRadius:
                               BorderRadius.circular(
                                   10)),
                           child: Center(
                             child: Text(
-                              'Send Request',
+                              'Send Consultation Request',
                               style: TextStyle(
                                   color: Colors.white,
                                   fontWeight:

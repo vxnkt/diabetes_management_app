@@ -7,7 +7,9 @@ class QuizStartScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Quiz')),
+      backgroundColor: const Color(0xFFEEEFF5),
+      appBar:
+          AppBar(backgroundColor: const Color(0xFFEEEFF5), title: Text('Quiz')),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -48,7 +50,11 @@ class QuizStartScreen extends StatelessWidget {
                       fontWeight: FontWeight.bold),
                 ),
                 decoration: BoxDecoration(
-                  color: Colors.deepPurple,
+                  gradient: const LinearGradient(
+                    colors: [Colors.deepPurple, Colors.deepPurpleAccent],
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                  ),
                   borderRadius: BorderRadius.circular(15),
                 ),
               ),
