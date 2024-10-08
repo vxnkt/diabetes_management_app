@@ -1,22 +1,23 @@
-import 'package:appathon/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 import 'package:intl/intl.dart'; // For handling dates
+import 'package:appathon/utils/colors.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+
+class HomesScreen extends StatefulWidget {
+  const HomesScreen({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<HomesScreen> createState() => _HomesScreenState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomesScreenState extends State<HomesScreen> {
   List<FlSpot> hba1cDataPoints = [];
   List<FlSpot> rbsDataPoints = []; // Store the graph points
   double hba1c = 0.0;
   double rbs = 0.0;
-  int daysCounter = 0; // Keep track of days for x-axis
+  int daysCounter = 0;  // Keep track of days for x-axis
+
 
   void _showInputDialog() {
     showDialog(
@@ -27,20 +28,22 @@ class _HomePageState extends State<HomePage> {
 
         return AlertDialog(
           title: Text("Enter Lab Values"),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: hba1cController,
-                decoration: InputDecoration(labelText: 'HbA1c'),
-                keyboardType: TextInputType.number,
-              ),
-              TextField(
-                controller: rbsController,
-                decoration: InputDecoration(labelText: 'RBS'),
-                keyboardType: TextInputType.number,
-              ),
-            ],
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: hba1cController,
+                  decoration: InputDecoration(labelText: 'HbA1c'),
+                  keyboardType: TextInputType.number,
+                ),
+                TextField(
+                  controller: rbsController,
+                  decoration: InputDecoration(labelText: 'RBS'),
+                  keyboardType: TextInputType.number,
+                ),
+              ],
+            ),
           ),
           actions: [
             TextButton(
@@ -60,6 +63,13 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  String _formatDateLabel(double value) {
+    final DateTime startDate =
+    DateTime.now().subtract(Duration(days: daysCounter));
+    final DateTime date = startDate.add(Duration(days: value.toInt()));
+    return DateFormat('MM/dd').format(date); // Format date as 'MM/dd'
+  }
+
   void _updateGraph() {
     // Update the graph with new points
     setState(() {
@@ -67,13 +77,6 @@ class _HomePageState extends State<HomePage> {
       rbsDataPoints.add(FlSpot(daysCounter.toDouble(), rbs));
       daysCounter++; // Increment days for next input
     });
-  }
-
-  String _formatDateLabel(double value) {
-    final DateTime startDate =
-        DateTime.now().subtract(Duration(days: daysCounter));
-    final DateTime date = startDate.add(Duration(days: value.toInt()));
-    return DateFormat('MM/dd').format(date); // Format date as 'MM/dd'
   }
 
   @override
@@ -85,9 +88,13 @@ class _HomePageState extends State<HomePage> {
             children: [
               Container(
                 padding:
-                    EdgeInsets.only(top: 15, left: 15, right: 15, bottom: 10),
+                EdgeInsets.only(top: 15, left: 15, right: 15, bottom: 10),
                 decoration: BoxDecoration(
-                  color: kPrimaryColor,
+                  gradient: LinearGradient(
+                    colors: [Colors.blueAccent, Colors.lightBlueAccent],
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                  ),
                   borderRadius: BorderRadius.only(
                     bottomLeft: Radius.circular(20),
                     bottomRight: Radius.circular(20),
@@ -172,7 +179,7 @@ class _HomePageState extends State<HomePage> {
                           sideTitles: SideTitles(
                             showTitles: true,
                             interval:
-                                1, // Show X-axis labels only for each point
+                            1, // Show X-axis labels only for each point
                             getTitlesWidget: (value, meta) {
                               if (value.toInt() >= 0 &&
                                   value.toInt() < hba1cDataPoints.length) {
@@ -182,7 +189,7 @@ class _HomePageState extends State<HomePage> {
                                       .add(Duration(days: value.toInt()))),
                                   style: TextStyle(
                                       fontSize:
-                                          10), // Styling for X-axis labels
+                                      10), // Styling for X-axis labels
                                 );
                               }
                               return Container(); // Hide labels for non-existent points
@@ -257,61 +264,43 @@ class _HomePageState extends State<HomePage> {
                   ],
                 ),
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  TextButton(
-                    onPressed: () {},
-                    child: Text(
-                      "Medical History",
-                    ),
-                  ),
-                ],
-              ),
               SizedBox(
                 height: 60,
               ),
             ],
           ),
-          Positioned(
-            bottom: 100,
-            left: MediaQuery.of(context).size.width / 2 -
-                60, // Center the circular widget
-            child: Column(
-              children: [
-                GestureDetector(
-                  onTap: () {
-                    FlutterPhoneDirectCaller.callNumber('+123123213');
-                  },
-                  child: Container(
-                    width: 120, // Size of the circular widget
-                    height: 120,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color:
-                          Colors.greenAccent, // Background color of the circle
-                    ),
-                    child: Center(
-                      child: Icon(
-                        Icons.call,
-                        size: 50, // Size of the call icon
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                ),
-                SizedBox(height: 10), // Spacing between button and text
-                Text(
-                  "Emergency Call",
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.red,
-                  ),
-                ),
-              ],
-            ),
-          ),
+          // Positioned(
+          //   bottom: 170,
+          //   left: 20,
+          //   right: 20, // Position the buttons evenly
+          //   child: Row(
+          //     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          //     children: [
+          //       _buildActionButton(
+          //         icon: Icons.quiz,
+          //         label: 'Quiz',
+          //         onTap: () {
+          //           // Handle Quiz button tap
+          //         },
+          //       ),
+          //       _buildActionButton(
+          //         icon: Icons.history,
+          //         label: 'Medical History',
+          //         onTap: () {
+          //           // Handle Medical History button tap
+          //         },
+          //       ),
+          //       _buildActionButton(
+          //         icon: Icons.help_outline,
+          //         label: 'FAQ',
+          //         onTap: () {
+          //           // Handle FAQ button tap
+          //         },
+          //       ),
+          //     ],
+          //   ),
+          // ),
+
         ],
       ),
     );

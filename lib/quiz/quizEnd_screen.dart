@@ -1,5 +1,6 @@
 import 'package:appathon/quiz/quizStart_screen.dart';
 import 'package:appathon/quiz/quiz_navigator.dart';
+import 'package:appathon/screens/home_page.dart';
 import 'package:flutter/material.dart';
 
 class QuizEndScreen extends StatelessWidget {
@@ -49,7 +50,7 @@ class QuizEndScreen extends StatelessWidget {
             children: [
               GestureDetector(
                 onTap: () {
-                  Navigator.of(context).push(MaterialPageRoute(builder: (context) => QuizStartScreen()));
+                  Navigator.of(context).push(MaterialPageRoute(builder: (context) => HomePage()));
                 },
                 child: Container(
                   padding: EdgeInsets.all(20),

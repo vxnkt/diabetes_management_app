@@ -1,23 +1,25 @@
-import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/material.dart';
-import 'SignUp.dart'; // Import your SignUpScreen
 import 'package:appathon/home_page.dart';
+import 'package:appathon/quiz/quizStart_screen.dart';
+import 'package:flutter/material.dart';
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();  // Initialize Firebase
-  runApp(MyApp());
+void main() {
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Appathon',
+      debugShowCheckedModeBanner: false,
+      title: 'Diabetes Management App',
       theme: ThemeData(
-        primarySwatch: Colors.deepPurple,
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        useMaterial3: true,
       ),
-      home: SignUpScreen(),  // Set the SignUpScreen as the default
+      home: HomePage(),
     );
   }
 }
+
