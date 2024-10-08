@@ -30,7 +30,8 @@ class _SignInPageState extends State<SignInPage> {
           color: Colors.deepPurple, // Focused border color
         ),
       ),
-      contentPadding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 20.0), // Padding inside the box
+      contentPadding: EdgeInsets.symmetric(
+          vertical: 16.0, horizontal: 20.0), // Padding inside the box
     );
   }
 
@@ -41,19 +42,26 @@ class _SignInPageState extends State<SignInPage> {
         _isLoading = true;
       });
 
-      String? result = await _authMethods.loginUser(email: _email, password: _password);
+      String? role =
+          await _authMethods.loginUser(email: _email, password: _password);
       setState(() {
         _isLoading = false;
       });
 
-      if (result == "Success") {
-        Navigator.pushReplacementNamed(context, '/home');
+      if (role != null) {
+        if (role == "doctor") {
+          // Navigate to doctor home page
+          Navigator.pushReplacementNamed(context, '/doctorHomePage');
+        } else {
+          // Navigate to regular home page
+          Navigator.pushReplacementNamed(context, '/home');
+        }
       } else {
         showDialog(
           context: context,
           builder: (context) {
             return AlertDialog(
-              content: Text(result ?? "An error occurred. Please try again."),
+              content: Text('An error occurred. Please try again.'),
               actions: <Widget>[
                 TextButton(
                   child: Text('OK'),
@@ -98,7 +106,6 @@ class _SignInPageState extends State<SignInPage> {
                 textAlign: TextAlign.center,
               ),
               SizedBox(height: 40),
-
               TextFormField(
                 decoration: _inputDecoration('Email'),
                 keyboardType: TextInputType.emailAddress,
@@ -106,7 +113,9 @@ class _SignInPageState extends State<SignInPage> {
                   if (value == null || value.isEmpty) {
                     return 'Please enter your email';
                   }
-                  if (!RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$').hasMatch(value)) {
+                  if (!RegExp(
+                          r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$')
+                      .hasMatch(value)) {
                     return 'Enter a valid email address';
                   }
                   return null;
@@ -114,7 +123,6 @@ class _SignInPageState extends State<SignInPage> {
                 onSaved: (value) => _email = value ?? '',
               ),
               SizedBox(height: 16),
-
               TextFormField(
                 decoration: _inputDecoration('Password'),
                 obscureText: true,
@@ -130,29 +138,29 @@ class _SignInPageState extends State<SignInPage> {
                 onSaved: (value) => _password = value ?? '',
               ),
               SizedBox(height: 40),
-
               _isLoading
                   ? CircularProgressIndicator()
                   : ElevatedButton(
-                onPressed: _submit,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.deepPurple,
-                  padding: EdgeInsets.symmetric(horizontal: 50, vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30.0),
-                  ),
-                ),
-                child: Text('Sign In', style: TextStyle(color: Colors.white)),
-              ),
+                      onPressed: _submit,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.deepPurple,
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 50, vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30.0),
+                        ),
+                      ),
+                      child: Text('Sign In',
+                          style: TextStyle(color: Colors.white)),
+                    ),
               SizedBox(height: 20),
-
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text("Don't have an account?"),
                   TextButton(
                     onPressed: () {
-                      Navigator.pushReplacementNamed(context, '/register');
+                      Navigator.pushReplacementNamed(context, '/signup');
                     },
                     child: Text(
                       'Register',
