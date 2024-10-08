@@ -9,10 +9,13 @@ import 'package:appathon/quiz/quizStart_screen.dart';
 import 'package:appathon/screens/homescreen.dart';
 import 'package:appathon/utils/notification_service.dart';
 import 'package:flutter/material.dart';
+import 'firebase/firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(); // Firebase initialization
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  ); // Firebase initialization
   await NotificationService.init(); // Notification service initialization
   tz.initializeTimeZones(); // Timezone initialization
   runApp(const MyApp());
