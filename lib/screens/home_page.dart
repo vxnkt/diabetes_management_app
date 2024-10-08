@@ -3,7 +3,9 @@ import 'package:appathon/screens/doctor_screen.dart';
 import 'package:appathon/screens/emergency_screen.dart';
 import 'package:appathon/screens/homescreen.dart';
 import 'package:appathon/screens/profile_page.dart';
+import 'package:appathon/utils/notification_service.dart';
 import 'package:flutter/material.dart';
+import 'package:timezone/data/latest_all.dart' as tz;
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -14,6 +16,23 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0; // Track the selected tab
+
+  @override
+  void initState() {
+    super.initState();
+    // Initialize the time zone and notification service
+    tz.initializeTimeZones();
+    NotificationService.init();
+
+    // Schedule the notification for 2 seconds after the app is opened
+    DateTime scheduledTime = DateTime.now().add(Duration(seconds: 2));
+    NotificationService.scheduleNotification(
+      1,
+      "DiaBuddy",
+      "Remember to take your medications!",
+      scheduledTime,
+    );
+  }
 
   void _onItemTapped(int index) {
     setState(() {
@@ -36,7 +55,7 @@ class _HomePageState extends State<HomePage> {
         child: _widgetOptions.elementAt(_selectedIndex),
       ),
       bottomNavigationBar: BottomNavigationBar(
-        backgroundColor:  const Color(0xFFEEEFF5),
+        backgroundColor: const Color(0xFFEEEFF5),
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.home),

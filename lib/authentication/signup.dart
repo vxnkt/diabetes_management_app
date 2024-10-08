@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../firebase/auth_methods.dart';
 
-
 class SignupPage extends StatefulWidget {
   @override
   _SignupPageState createState() => _SignupPageState();
@@ -11,6 +10,7 @@ class SignupPage extends StatefulWidget {
 
 class _SignupPageState extends State<SignupPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  bool _isDoctorSignup = false; // Toggle between user and doctor signup
   String _name = '';
   int _age = 18;
   String _gender = 'Male';
@@ -19,6 +19,7 @@ class _SignupPageState extends State<SignupPage> {
   String _password = '';
   String _diabetesType = 'Type 1';
   String _diabetesDuration = 'Less than 6 Months';
+  String _doctorUid = ''; // For doctor signup
   bool _isLoading = false;
 
   AuthMethods _authMethods = AuthMethods();
@@ -45,27 +46,43 @@ class _SignupPageState extends State<SignupPage> {
         _isLoading = true;
       });
 
-      String? result = await _authMethods.signupUser(
-        email: _email,
-        password: _password,
-        mobileNumber: _mobileNumber,
-        name: _name,
-        age: _age,
-        gender: _gender,
-        diabetesType: _diabetesType,
-        diabetesDuration: _diabetesDuration,
-      );
+      String? result;
+      if (_isDoctorSignup) {
+        result = await _authMethods.signupDoctor(
+          email: _email,
+          password: _password,
+          mobileNumber: _mobileNumber,
+          name: _name,
+        );
+      } else {
+        result = await _authMethods.signupUser(
+          email: _email,
+          password: _password,
+          mobileNumber: _mobileNumber,
+          name: _name,
+          age: _age,
+          gender: _gender,
+          diabetesType: _diabetesType,
+          diabetesDuration: _diabetesDuration,
+        );
+      }
 
       setState(() {
         _isLoading = false;
       });
 
       if (result == "Success") {
-        // Navigate to MedicalDetailsPage after successful signup
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => MedicalDetailsPage()),
-        );
+        // Redirect based on the signup type
+        if (_isDoctorSignup) {
+          // Navigate to the Doctor's homepage if signup is for Doctor
+          Navigator.pushReplacementNamed(context, '/doctorHomePage');
+        } else {
+          // Navigate to Medical Details page for users
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => MedicalDetailsPage()),
+          );
+        }
       } else {
         showDialog(
           context: context,
@@ -107,6 +124,23 @@ class _SignupPageState extends State<SignupPage> {
               ),
               SizedBox(height: 40),
 
+              // Switch between User and Doctor Signup
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text('User'),
+                  Switch(
+                    value: _isDoctorSignup,
+                    onChanged: (value) {
+                      setState(() {
+                        _isDoctorSignup = value;
+                      });
+                    },
+                  ),
+                  Text('Doctor'),
+                ],
+              ),
+
               // Name Field
               TextFormField(
                 decoration: _inputDecoration('Name'),
@@ -120,47 +154,66 @@ class _SignupPageState extends State<SignupPage> {
               ),
               SizedBox(height: 16),
 
-              // Age Field
-              DropdownButtonFormField<int>(
-                decoration: _inputDecoration('Age'),
-                value: _age,
-                items: List.generate(73, (index) => 18 + index)
-                    .map((age) => DropdownMenuItem(
-                  value: age,
-                  child: Text(age.toString()),
-                ))
-                    .toList(),
-                onChanged: (value) => setState(() => _age = value!),
-              ),
-              SizedBox(height: 16),
+              if (!_isDoctorSignup) ...[
+                // User specific fields: Age, Gender, Diabetes Type, and Duration
+                DropdownButtonFormField<int>(
+                  decoration: _inputDecoration('Age'),
+                  value: _age,
+                  items: List.generate(73, (index) => 18 + index)
+                      .map((age) => DropdownMenuItem(
+                            value: age,
+                            child: Text(age.toString()),
+                          ))
+                      .toList(),
+                  onChanged: (value) => setState(() => _age = value!),
+                ),
+                SizedBox(height: 16),
 
-              // Gender Field
-              DropdownButtonFormField<String>(
-                decoration: _inputDecoration('Gender'),
-                value: _gender,
-                items: ['Male', 'Female', 'Other']
-                    .map((gender) => DropdownMenuItem(
-                  value: gender,
-                  child: Text(gender),
-                ))
-                    .toList(),
-                onChanged: (value) => setState(() => _gender = value!),
-              ),
-              SizedBox(height: 16),
+                DropdownButtonFormField<String>(
+                  decoration: _inputDecoration('Gender'),
+                  value: _gender,
+                  items: ['Male', 'Female', 'Other']
+                      .map((gender) => DropdownMenuItem(
+                            value: gender,
+                            child: Text(gender),
+                          ))
+                      .toList(),
+                  onChanged: (value) => setState(() => _gender = value!),
+                ),
+                SizedBox(height: 16),
 
-              // Mobile Number Field
-              TextFormField(
-                decoration: _inputDecoration('Mobile Number'),
-                keyboardType: TextInputType.phone,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your mobile number';
-                  }
-                  return null;
-                },
-                onSaved: (value) => _mobileNumber = value ?? '',
-              ),
-              SizedBox(height: 16),
+                DropdownButtonFormField<String>(
+                  decoration: _inputDecoration('Type of Diabetes'),
+                  value: _diabetesType,
+                  items: ['Type 1', 'Type 2', 'Gestational Diabetes']
+                      .map((type) => DropdownMenuItem(
+                            value: type,
+                            child: Text(type),
+                          ))
+                      .toList(),
+                  onChanged: (value) => setState(() => _diabetesType = value!),
+                ),
+                SizedBox(height: 16),
+
+                DropdownButtonFormField<String>(
+                  decoration: _inputDecoration('Duration of Diabetes'),
+                  value: _diabetesDuration,
+                  items: [
+                    'Less than 6 Months',
+                    '12 months (1 year)',
+                    for (int i = 2; i <= 12; i++) '$i years',
+                    'More than 12 years'
+                  ]
+                      .map((duration) => DropdownMenuItem(
+                            value: duration,
+                            child: Text(duration),
+                          ))
+                      .toList(),
+                  onChanged: (value) =>
+                      setState(() => _diabetesDuration = value!),
+                ),
+                SizedBox(height: 16),
+              ],
 
               // Email Field
               TextFormField(
@@ -169,7 +222,9 @@ class _SignupPageState extends State<SignupPage> {
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter your email';
-                  } else if (!RegExp(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$").hasMatch(value)) {
+                  } else if (!RegExp(
+                          r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")
+                      .hasMatch(value)) {
                     return 'Please enter a valid email address';
                   }
                   return null;
@@ -194,35 +249,17 @@ class _SignupPageState extends State<SignupPage> {
               ),
               SizedBox(height: 16),
 
-              // Type of Diabetes Field
-              DropdownButtonFormField<String>(
-                decoration: _inputDecoration('Type of Diabetes'),
-                value: _diabetesType,
-                items: ['Type 1', 'Type 2', 'Gestational Diabetes']
-                    .map((type) => DropdownMenuItem(
-                  value: type,
-                  child: Text(type),
-                ))
-                    .toList(),
-                onChanged: (value) => setState(() => _diabetesType = value!),
-              ),
-              SizedBox(height: 16),
-
-              // Duration of Diabetes Field
-              DropdownButtonFormField<String>(
-                decoration: _inputDecoration('Duration of Diabetes'),
-                value: _diabetesDuration,
-                items: [
-                  'Less than 6 Months',
-                  '12 months (1 year)',
-                  for (int i = 2; i <= 12; i++) '$i years',
-                  'More than 12 years'
-                ].map((duration) => DropdownMenuItem(
-                  value: duration,
-                  child: Text(duration),
-                )).toList(),
-                onChanged: (value) =>
-                    setState(() => _diabetesDuration = value!),
+              // Mobile Number Field
+              TextFormField(
+                decoration: _inputDecoration('Mobile Number'),
+                keyboardType: TextInputType.phone,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter your mobile number';
+                  }
+                  return null;
+                },
+                onSaved: (value) => _mobileNumber = value ?? '',
               ),
               SizedBox(height: 40),
 
@@ -230,17 +267,18 @@ class _SignupPageState extends State<SignupPage> {
               _isLoading
                   ? CircularProgressIndicator()
                   : ElevatedButton(
-                onPressed: _submit,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.deepPurple,
-                  padding:
-                  EdgeInsets.symmetric(horizontal: 50, vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30.0),
-                  ),
-                ),
-                child: Text('Sign Up', style: TextStyle(color: Colors.white)),
-              ),
+                      onPressed: _submit,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.deepPurple,
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 50, vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30.0),
+                        ),
+                      ),
+                      child: Text('Sign Up',
+                          style: TextStyle(color: Colors.white)),
+                    ),
               SizedBox(height: 20),
 
               // Already have an account? Sign In link
@@ -252,7 +290,8 @@ class _SignupPageState extends State<SignupPage> {
                     onPressed: () {
                       Navigator.pushReplacementNamed(context, '/login');
                     },
-                    child: Text('Sign In', style: TextStyle(color: Colors.deepPurple)),
+                    child: Text('Sign In',
+                        style: TextStyle(color: Colors.deepPurple)),
                   ),
                 ],
               ),

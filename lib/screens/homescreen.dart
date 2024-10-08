@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:appathon/SelfHelp/selfhelppage.dart';
 import 'package:appathon/utils/notification_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -390,7 +391,55 @@ class _HomesScreenState extends State<HomesScreen> {
                         : Container(),
                   ],
                 ),
-              )
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 15),
+                child: Divider(),
+              ),
+              GestureDetector(
+                onTap: () {
+                  Navigator.of(context).push(
+                      MaterialPageRoute(builder: (context) => SelfHelpPage()));
+                },
+                child: Container(
+                  padding: EdgeInsets.all(12),
+                  margin: EdgeInsets.all(18),
+                  decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [Colors.deepPurple, Colors.deepPurpleAccent],
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                      ),
+                      borderRadius: BorderRadius.circular(20)),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.help_center_outlined,
+                        color: Colors.white,
+                        size: 40,
+                      ),
+                      SizedBox(
+                        width: 20,
+                      ),
+                      Column(
+                        children: [
+                          Text(
+                            'Self Help',
+                            style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white),
+                          ),
+                          Text(
+                            'Explore new information and stay updated',
+                            style: TextStyle(color: Colors.white),
+                          )
+                        ],
+                      )
+                    ],
+                  ),
+                ),
+              ),
             ],
           ),
         ),
@@ -436,7 +485,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           child: Icon(
             Icons.notifications,
             size: 30,
-            color: Colors.white, // Change this to `primaryColor` if necessary
+            color: Colors.white, // Change this to primaryColor if necessary
           ),
         ),
       ],
