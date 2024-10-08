@@ -1,4 +1,5 @@
 import 'package:appathon/quiz/quizStart_screen.dart';
+import 'package:appathon/screens/doctor_screen.dart';
 import 'package:appathon/screens/emergency_screen.dart';
 import 'package:appathon/screens/homescreen.dart';
 import 'package:flutter/material.dart';
@@ -11,7 +12,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-
   int _selectedIndex = 0; // Track the selected tab
 
   void _onItemTapped(int index) {
@@ -22,11 +22,10 @@ class _HomePageState extends State<HomePage> {
 
   static const List<Widget> _widgetOptions = <Widget>[
     HomesScreen(),
-    Text('Doctor Page', style: TextStyle(fontSize: 24)),
+    DoctorScreen(),
     EmergencyScreen(),
     QuizStartScreen(),
     Text('Profile Page', style: TextStyle(fontSize: 24)),
-
   ];
 
   @override
@@ -36,6 +35,7 @@ class _HomePageState extends State<HomePage> {
         child: _widgetOptions.elementAt(_selectedIndex),
       ),
       bottomNavigationBar: BottomNavigationBar(
+        backgroundColor:  const Color(0xFFEEEFF5),
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
@@ -60,43 +60,11 @@ class _HomePageState extends State<HomePage> {
         ],
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
-        selectedItemColor: Colors.blue,
+        selectedItemColor: Colors.deepPurple,
         unselectedItemColor: Colors.black,
         showUnselectedLabels: true,
-
+        elevation: 10,
       ),
     );
   }
-
-//   Widget _buildActionButton(
-//       {required IconData icon,
-//       required String label,
-//       required Function onTap}) {
-//     return Column(
-//       children: [
-//         GestureDetector(
-//           onTap: () => onTap(),
-//           child: Container(
-//             width: 50,
-//             height: 50,
-//             decoration: BoxDecoration(
-//               shape: BoxShape.circle,
-//               gradient: LinearGradient(
-//                 colors: [Colors.blueAccent, Colors.lightBlueAccent],
-//                 begin: Alignment.topLeft,
-//                 end: Alignment.bottomRight,
-//               ),
-//             ),
-//             child: Icon(
-//               icon,
-//               size: 30,
-//               color: Colors.white,
-//             ),
-//           ),
-//         ),
-//         SizedBox(height: 10),
-//         Text(label),
-//       ],
-//     );
-//   }
- }
+}

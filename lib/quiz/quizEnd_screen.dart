@@ -1,3 +1,4 @@
+import 'package:appathon/screens/home_page.dart';
 import 'package:appathon/quiz/quizStart_screen.dart';
 import 'package:appathon/quiz/quiz_navigator.dart';
 import 'package:appathon/screens/home_page.dart';
@@ -14,9 +15,9 @@ class QuizEndScreen extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
-            margin: EdgeInsets.only(bottom: 20),
-            width: MediaQuery.of(context).size.width*0.8,
-              height: MediaQuery.of(context).size.height*0.2,
+              margin: EdgeInsets.only(bottom: 20),
+              width: MediaQuery.of(context).size.width * 0.8,
+              height: MediaQuery.of(context).size.height * 0.2,
               child: Image.network(
                   'https://cdn.pixabay.com/photo/2016/10/10/01/49/hook-1727484_640.png')),
           Container(
@@ -37,10 +38,9 @@ class QuizEndScreen extends StatelessWidget {
               child: Text(
                 'Your total score is: ${score}',
                 style: TextStyle(
-                  color: Colors.deepPurple,
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold
-                ),
+                    color: Colors.deepPurple,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold),
               ),
             ),
           ),
@@ -50,7 +50,8 @@ class QuizEndScreen extends StatelessWidget {
             children: [
               GestureDetector(
                 onTap: () {
-                  Navigator.of(context).push(MaterialPageRoute(builder: (context) => HomePage()));
+                  Navigator.of(context).push(
+                      MaterialPageRoute(builder: (context) => HomePage()));
                 },
                 child: Container(
                   padding: EdgeInsets.all(20),
@@ -69,7 +70,8 @@ class QuizEndScreen extends StatelessWidget {
               ),
               GestureDetector(
                 onTap: () {
-                  Navigator.of(context).push(MaterialPageRoute(builder: (context) => QuizNavigator()));
+                  Navigator.of(context).push(
+                      MaterialPageRoute(builder: (context) => QuizNavigator()));
                 },
                 child: Container(
                   padding: EdgeInsets.all(20),

@@ -1,8 +1,10 @@
+import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:intl/intl.dart'; // For handling dates
-import 'package:appathon/utils/colors.dart';
-
 
 class HomesScreen extends StatefulWidget {
   const HomesScreen({super.key});
@@ -16,8 +18,49 @@ class _HomesScreenState extends State<HomesScreen> {
   List<FlSpot> rbsDataPoints = []; // Store the graph points
   double hba1c = 0.0;
   double rbs = 0.0;
-  int daysCounter = 0;  // Keep track of days for x-axis
+  int daysCounter = 0; // Keep track of days for x-axis
 
+  File? _image; // Store the selected image
+
+  final ImagePicker _picker = ImagePicker();
+
+  Future<void> _pickImage() async {
+    final XFile? pickedFile = await _picker.pickImage(
+      source:
+          ImageSource.gallery, // You can also use ImageSource.camera for camera
+    );
+
+    if (pickedFile != null) {
+      setState(() {
+        _image = File(pickedFile.path); // Set the selected image
+      });
+    }
+  }
+
+  Future<void> _uploadImage(XFile pickedFile) async {
+    try {
+      // Create a unique filename for the image
+      String fileName = 'wounds/${DateTime.now().millisecondsSinceEpoch}.jpg';
+
+      // Upload the image to Firebase Storage
+      TaskSnapshot uploadTask = await FirebaseStorage.instance
+          .ref(fileName)
+          .putFile(File(pickedFile.path));
+
+      // Get the download URL
+      String downloadUrl = await uploadTask.ref.getDownloadURL();
+
+      // Save the image URL to Firestore
+      // await FirebaseFirestore.instance.collection('users').doc(userId).collection('photos').add({
+      //   'url': downloadUrl,
+      //   'uploadedAt': Timestamp.now(),
+      // });
+
+      print("Image uploaded successfully. URL: $downloadUrl");
+    } catch (e) {
+      print("Error uploading image: $e");
+    }
+  }
 
   void _showInputDialog() {
     showDialog(
@@ -27,19 +70,19 @@ class _HomesScreenState extends State<HomesScreen> {
         TextEditingController rbsController = TextEditingController();
 
         return AlertDialog(
-          title: Text("Enter Lab Values"),
+          title: const Text("Enter Lab Values"),
           content: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 TextField(
                   controller: hba1cController,
-                  decoration: InputDecoration(labelText: 'HbA1c'),
+                  decoration: const InputDecoration(labelText: 'HbA1c'),
                   keyboardType: TextInputType.number,
                 ),
                 TextField(
                   controller: rbsController,
-                  decoration: InputDecoration(labelText: 'RBS'),
+                  decoration: const InputDecoration(labelText: 'RBS'),
                   keyboardType: TextInputType.number,
                 ),
               ],
@@ -55,19 +98,12 @@ class _HomesScreenState extends State<HomesScreen> {
                 });
                 Navigator.of(context).pop();
               },
-              child: Text("Update"),
+              child: const Text("Update"),
             ),
           ],
         );
       },
     );
-  }
-
-  String _formatDateLabel(double value) {
-    final DateTime startDate =
-    DateTime.now().subtract(Duration(days: daysCounter));
-    final DateTime date = startDate.add(Duration(days: value.toInt()));
-    return DateFormat('MM/dd').format(date); // Format date as 'MM/dd'
   }
 
   void _updateGraph() {
@@ -79,61 +115,67 @@ class _HomesScreenState extends State<HomesScreen> {
     });
   }
 
+  Size get preferredSize => const Size.fromHeight(100); // Custom height
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        children: [
-          ListView(
+      appBar: CustomAppBar(),
+      backgroundColor: const Color(0xFFEEEFF5),
+      body: SingleChildScrollView(
+        child: SafeArea(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              Container(
-                padding:
-                EdgeInsets.only(top: 15, left: 15, right: 15, bottom: 10),
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [Colors.blueAccent, Colors.lightBlueAccent],
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                  ),
-                  borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(20),
-                    bottomRight: Radius.circular(20),
-                  ),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Icon(Icons.dashboard, size: 30, color: primaryColor),
-                        Icon(Icons.notifications,
-                            size: 30, color: primaryColor),
-                      ],
-                    ),
-                    SizedBox(height: 20),
-                    Padding(
-                      padding: EdgeInsets.only(left: 3, bottom: 15),
-                      child: Text(
-                        "Hi, User",
-                        style: TextStyle(
-                          fontSize: 25,
-                          fontWeight: FontWeight.w600,
-                          letterSpacing: 1,
-                          wordSpacing: 2,
-                          color: primaryColor,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              // Container(
+              //   padding: const EdgeInsets.only(
+              //       top: 15, left: 15, right: 15, bottom: 10),
+              //   decoration: BoxDecoration(
+              //     gradient: const LinearGradient(
+              //       colors: [Colors.blueAccent, Colors.lightBlueAccent],
+              //       begin: Alignment.topCenter,
+              //       end: Alignment.bottomCenter,
+              //     ),
+              //     borderRadius: const BorderRadius.only(
+              //       bottomLeft: Radius.circular(20),
+              //       bottomRight: Radius.circular(20),
+              //     ),
+              //   ),
+              //   child: Column(
+              //     crossAxisAlignment: CrossAxisAlignment.start,
+              //     children: [
+              //       Row(
+              //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              //         children: [
+              //           const Icon(Icons.dashboard,
+              //               size: 30, color: Colors.white),
+              //           Icon(Icons.notifications,
+              //               size: 30, color: primaryColor),
+              //         ],
+              //       ),
+              //       const SizedBox(height: 20),
+              //       const Padding(
+              //         padding: EdgeInsets.only(left: 3, bottom: 15),
+              //         child: Text(
+              //           "Hi, User",
+              //           style: TextStyle(
+              //             fontSize: 25,
+              //             fontWeight: FontWeight.w600,
+              //             letterSpacing: 1,
+              //             wordSpacing: 2,
+              //             color: Colors.white,
+              //           ),
+              //         ),
+              //       ),
+              //     ],
+              //   ),
+              // ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Container(
-                    padding: EdgeInsets.all(15),
-                    child: Text(
+                    padding: const EdgeInsets.all(15),
+                    child: const Text(
                       "Health Chart",
                       style: TextStyle(
                         fontSize: 25,
@@ -142,18 +184,17 @@ class _HomesScreenState extends State<HomesScreen> {
                     ),
                   ),
                   Container(
-                    padding: EdgeInsets.all(15),
+                    padding: const EdgeInsets.all(15),
                     child: ElevatedButton(
                       onPressed: _showInputDialog,
-                      child: Text('Update'),
+                      child: const Text('Update'),
                     ),
                   ),
                 ],
               ),
               Padding(
-                padding: EdgeInsets.symmetric(
-                    horizontal: 20), // Adjust padding to center the graph
-                child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: SizedBox(
                   height: 350,
                   child: LineChart(
                     LineChartData(
@@ -174,22 +215,17 @@ class _HomesScreenState extends State<HomesScreen> {
                         ),
                       ],
                       titlesData: FlTitlesData(
-                        show: true,
                         bottomTitles: AxisTitles(
                           sideTitles: SideTitles(
                             showTitles: true,
-                            interval:
-                            1, // Show X-axis labels only for each point
+                            interval: 1,
                             getTitlesWidget: (value, meta) {
                               if (value.toInt() >= 0 &&
                                   value.toInt() < hba1cDataPoints.length) {
-                                // Assuming the X-axis represents dates or integers
                                 return Text(
                                   DateFormat('MM/dd').format(DateTime.now()
                                       .add(Duration(days: value.toInt()))),
-                                  style: TextStyle(
-                                      fontSize:
-                                      10), // Styling for X-axis labels
+                                  style: const TextStyle(fontSize: 10),
                                 );
                               }
                               return Container(); // Hide labels for non-existent points
@@ -199,22 +235,14 @@ class _HomesScreenState extends State<HomesScreen> {
                         leftTitles: AxisTitles(
                           sideTitles: SideTitles(
                             showTitles: true,
-                            interval: 1, // Adjust interval to reduce congestion
+                            interval: 1,
                             getTitlesWidget: (value, meta) {
                               return Text(
                                 value.toStringAsFixed(1),
-                                style: TextStyle(
-                                  fontSize: 12, // Y-axis label size
-                                ),
+                                style: const TextStyle(fontSize: 12),
                               );
                             },
                           ),
-                        ),
-                        rightTitles: AxisTitles(
-                          sideTitles: SideTitles(showTitles: false),
-                        ),
-                        topTitles: AxisTitles(
-                          sideTitles: SideTitles(showTitles: false),
                         ),
                       ),
                       gridData: FlGridData(
@@ -245,11 +273,11 @@ class _HomesScreenState extends State<HomesScreen> {
                           height: 10,
                           color: Colors.blue,
                         ),
-                        SizedBox(width: 5),
-                        Text("HbA1c"),
+                        const SizedBox(width: 5),
+                        const Text("HbA1c"),
                       ],
                     ),
-                    SizedBox(width: 20),
+                    const SizedBox(width: 20),
                     Row(
                       children: [
                         Container(
@@ -257,52 +285,162 @@ class _HomesScreenState extends State<HomesScreen> {
                           height: 10,
                           color: Colors.red,
                         ),
-                        SizedBox(width: 5),
-                        Text("RBS"),
+                        const SizedBox(width: 5),
+                        const Text("RBS"),
                       ],
                     ),
                   ],
                 ),
               ),
-              SizedBox(
-                height: 60,
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 15),
+                child: Divider(),
               ),
+              Container(
+                padding: EdgeInsets.all(10),
+                margin: EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(15),
+                  color:
+                      _image != null ? Colors.white : const Color(0xFFEEEFF5),
+                ),
+                child: Column(
+                  children: [
+                    _image == null ?
+                    GestureDetector(
+                      onTap: _pickImage, // Trigger image picking on tap
+                      child: Container(
+                        height: MediaQuery.of(context).size.height * 0.08,
+                        width: MediaQuery.of(context).size.width * 0.9,
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            colors: [
+                              Colors.deepPurple,
+                              Colors.deepPurpleAccent
+                            ],
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                          ),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: const Center(
+                          child: Text(
+                            'Upload New Wound Photo',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ):GestureDetector(
+                      onTap: () {}, // Trigger image picking on tap
+                      child: Container(
+                        height: MediaQuery.of(context).size.height * 0.08,
+                        width: MediaQuery.of(context).size.width * 0.9,
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            colors: [
+                              Colors.deepPurple,
+                              Colors.deepPurpleAccent
+                            ],
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                          ),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: const Center(
+                          child: Text(
+                            'Confirm Upload',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+        
+                    // Display the image if selected
+                    _image != null
+                        ? Container(
+                            height: 200,
+                            width: 200,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(20),
+                              image: DecorationImage(
+                                image: FileImage(_image!), // Display the image
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          )
+                        : Container(),
+                  ],
+                ),
+              )
             ],
           ),
-          // Positioned(
-          //   bottom: 170,
-          //   left: 20,
-          //   right: 20, // Position the buttons evenly
-          //   child: Row(
-          //     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          //     children: [
-          //       _buildActionButton(
-          //         icon: Icons.quiz,
-          //         label: 'Quiz',
-          //         onTap: () {
-          //           // Handle Quiz button tap
-          //         },
-          //       ),
-          //       _buildActionButton(
-          //         icon: Icons.history,
-          //         label: 'Medical History',
-          //         onTap: () {
-          //           // Handle Medical History button tap
-          //         },
-          //       ),
-          //       _buildActionButton(
-          //         icon: Icons.help_outline,
-          //         label: 'FAQ',
-          //         onTap: () {
-          //           // Handle FAQ button tap
-          //         },
-          //       ),
-          //     ],
-          //   ),
-          // ),
-
-        ],
+        ),
       ),
     );
   }
+}
+
+class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
+  @override
+  Widget build(BuildContext context) {
+    return AppBar(
+      elevation: 0, // Remove AppBar shadow
+      flexibleSpace: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.deepPurple, Colors.deepPurpleAccent],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+          borderRadius: BorderRadius.only(
+            bottomLeft: Radius.circular(20),
+            bottomRight: Radius.circular(20),
+          ),
+        ),
+      ),
+      title: Padding(
+        padding: const EdgeInsets.only(top: 15.0, left: 3.0),
+        child: const Text(
+          "Hi, User",
+          style: TextStyle(
+            fontSize: 25,
+            fontWeight: FontWeight.w600,
+            letterSpacing: 1,
+            wordSpacing: 2,
+            color: Colors.white,
+          ),
+        ),
+      ),
+      actions: [
+        Padding(
+          padding: const EdgeInsets.only(right: 15.0),
+          child: Icon(
+            Icons.notifications,
+            size: 30,
+            color: Colors.white, // Change this to `primaryColor` if necessary
+          ),
+        ),
+      ],
+      leading: Padding(
+        padding: const EdgeInsets.only(left: 15.0),
+        child: Icon(
+          Icons.dashboard,
+          size: 30,
+          color: Colors.white,
+        ),
+      ),
+    );
+  }
+
+  @override
+  Size get preferredSize => const Size.fromHeight(80); // Custom height
 }
