@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:appathon/utils/notification_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
@@ -95,6 +96,14 @@ class _HomesScreenState extends State<HomesScreen> {
                   hba1c = double.tryParse(hba1cController.text) ?? 0.0;
                   rbs = double.tryParse(rbsController.text) ?? 0.0;
                   _updateGraph();
+                  DateTime scheduleDate =
+                      DateTime.now().add(const Duration(seconds: 5));
+                  NotificationService.scheduleNotification(
+                    1,
+                    'SugarLink',
+                    'Its time to take your medications!',
+                    scheduleDate,
+                  );
                 });
                 Navigator.of(context).pop();
               },
@@ -306,64 +315,65 @@ class _HomesScreenState extends State<HomesScreen> {
                 ),
                 child: Column(
                   children: [
-                    _image == null ?
-                    GestureDetector(
-                      onTap: _pickImage, // Trigger image picking on tap
-                      child: Container(
-                        height: MediaQuery.of(context).size.height * 0.08,
-                        width: MediaQuery.of(context).size.width * 0.9,
-                        decoration: BoxDecoration(
-                          gradient: const LinearGradient(
-                            colors: [
-                              Colors.deepPurple,
-                              Colors.deepPurpleAccent
-                            ],
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                          ),
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: const Center(
-                          child: Text(
-                            'Upload New Wound Photo',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
+                    _image == null
+                        ? GestureDetector(
+                            onTap: _pickImage, // Trigger image picking on tap
+                            child: Container(
+                              height: MediaQuery.of(context).size.height * 0.08,
+                              width: MediaQuery.of(context).size.width * 0.9,
+                              decoration: BoxDecoration(
+                                gradient: const LinearGradient(
+                                  colors: [
+                                    Colors.deepPurple,
+                                    Colors.deepPurpleAccent
+                                  ],
+                                  begin: Alignment.topCenter,
+                                  end: Alignment.bottomCenter,
+                                ),
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: const Center(
+                                child: Text(
+                                  'Upload New Wound Photo',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          )
+                        : GestureDetector(
+                            onTap: () {}, // Trigger image picking on tap
+                            child: Container(
+                              height: MediaQuery.of(context).size.height * 0.08,
+                              width: MediaQuery.of(context).size.width * 0.9,
+                              decoration: BoxDecoration(
+                                gradient: const LinearGradient(
+                                  colors: [
+                                    Colors.deepPurple,
+                                    Colors.deepPurpleAccent
+                                  ],
+                                  begin: Alignment.topCenter,
+                                  end: Alignment.bottomCenter,
+                                ),
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: const Center(
+                                child: Text(
+                                  'Confirm Upload',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
                             ),
                           ),
-                        ),
-                      ),
-                    ):GestureDetector(
-                      onTap: () {}, // Trigger image picking on tap
-                      child: Container(
-                        height: MediaQuery.of(context).size.height * 0.08,
-                        width: MediaQuery.of(context).size.width * 0.9,
-                        decoration: BoxDecoration(
-                          gradient: const LinearGradient(
-                            colors: [
-                              Colors.deepPurple,
-                              Colors.deepPurpleAccent
-                            ],
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                          ),
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: const Center(
-                          child: Text(
-                            'Confirm Upload',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
                     const SizedBox(height: 20),
-        
+
                     // Display the image if selected
                     _image != null
                         ? Container(
