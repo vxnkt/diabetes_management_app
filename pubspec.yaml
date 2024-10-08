@@ -43,6 +43,8 @@ dependencies:
   flutter_local_notifications: ^17.2.3
   flutter_timezone: ^3.0.1
   timezone: ^0.9.4
+  youtube_player_flutter: ^8.0.0
+  youtube_player_iframe: ^3.0.4
 
 dev_dependencies:
   flutter_test:
