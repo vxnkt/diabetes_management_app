@@ -58,7 +58,7 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
           ),
           GestureDetector(
             onTap: () {
-              FlutterPhoneDirectCaller.callNumber('+123123213');
+              FlutterPhoneDirectCaller.callNumber('102');
             },
             child: Center(
               child: Container(
