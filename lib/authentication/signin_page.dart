@@ -92,7 +92,7 @@ class _SignInPageState extends State<SignInPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               SvgPicture.asset(
-                'assets/login.svg',
+                'assets/signup.svg',
                 height: 300,
               ),
               SizedBox(height: 40),

@@ -2,6 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../firebase/auth_methods.dart';
+import '../screens/home_page.dart';
+
 
 class MedicalDetailsPage extends StatefulWidget {
   @override
@@ -59,7 +61,8 @@ class _MedicalDetailsPageState extends State<MedicalDetailsPage> {
                     _diabetesType = value;
                   });
                 },
-                validator: (value) => value == null ? 'Please select a type' : null,
+                validator: (value) =>
+                value == null ? 'Please select a type' : null,
               ),
               SizedBox(height: 16),
 
@@ -69,24 +72,36 @@ class _MedicalDetailsPageState extends State<MedicalDetailsPage> {
                 items: [
                   'Less than 6 months',
                   '12 months (1 year)',
-                  '2 years', '3 years', '4 years', '5 years',
-                  '6 years', '7 years', '8 years', '9 years', '10 years',
-                  '11 years', '12 or more years'
-                ].map((duration) => DropdownMenuItem(
+                  '2 years',
+                  '3 years',
+                  '4 years',
+                  '5 years',
+                  '6 years',
+                  '7 years',
+                  '8 years',
+                  '9 years',
+                  '10 years',
+                  '11 years',
+                  '12 or more years'
+                ]
+                    .map((duration) => DropdownMenuItem(
                   value: duration,
                   child: Text(duration),
-                )).toList(),
+                ))
+                    .toList(),
                 onChanged: (value) {
                   setState(() {
                     _diabetesDuration = value;
                   });
                 },
-                validator: (value) => value == null ? 'Please select a duration' : null,
+                validator: (value) =>
+                value == null ? 'Please select a duration' : null,
               ),
               SizedBox(height: 16),
 
               // Past Medical History
-              Text('Past Medical History', style: TextStyle(fontWeight: FontWeight.bold)),
+              Text('Past Medical History',
+                  style: TextStyle(fontWeight: FontWeight.bold)),
               CheckboxListTile(
                 title: Text('Hypertension (B.P)'),
                 value: _hasHypertension,
@@ -153,7 +168,8 @@ class _MedicalDetailsPageState extends State<MedicalDetailsPage> {
 
               // Past Medication History
               TextFormField(
-                decoration: InputDecoration(labelText: 'Past Medication History (Optional)'),
+                decoration: InputDecoration(
+                    labelText: 'Past Medication History (Optional)'),
                 onChanged: (value) {
                   setState(() {
                     _pastMedicationHistory = value;
@@ -205,7 +221,8 @@ class _MedicalDetailsPageState extends State<MedicalDetailsPage> {
               SizedBox(height: 16),
 
               // Complications
-              Text('Do you have any of the following?', style: TextStyle(fontWeight: FontWeight.bold)),
+              Text('Do you have any of the following?',
+                  style: TextStyle(fontWeight: FontWeight.bold)),
               CheckboxListTile(
                 title: Text('Presence of peripheral neuropathy'),
                 value: _complications.contains('Peripheral neuropathy'),
@@ -287,21 +304,23 @@ class _MedicalDetailsPageState extends State<MedicalDetailsPage> {
 
                     // Call the method from AuthMethods to store the data
                     AuthMethods authMethods = AuthMethods();
-                    User? user = FirebaseAuth.instance.currentUser;  // Get the current user
+                    User? user = FirebaseAuth.instance.currentUser; // Get the current user
                     if (user != null) {
                       await authMethods.saveMedicalDetails(uid: user.uid, medicalDetails: medicalDetails);
                       print('Medical Details Submitted');
+
+                      // Navigate to HomePage after submission
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => HomePage()),
+                      );
                     } else {
                       print('No user signed in');
                     }
                   }
                 },
-                child: Text('Submit', style: TextStyle(color: Colors.white)),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.deepPurple,
-                ),
+                child: Text('Submit'),
               ),
-
             ],
           ),
         ),
@@ -309,4 +328,3 @@ class _MedicalDetailsPageState extends State<MedicalDetailsPage> {
     );
   }
 }
-
