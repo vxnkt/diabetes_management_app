@@ -1,6 +1,8 @@
 import 'dart:io';
+import 'package:appathon/SelfHelp/selfhelppage.dart';
 import 'package:appathon/utils/notification_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
@@ -24,6 +26,7 @@ class _HomesScreenState extends State<HomesScreen> {
   File? _image; // Store the selected image
 
   final ImagePicker _picker = ImagePicker();
+  final FirebaseAuth _auth =  FirebaseAuth.instance;
 
   Future<void> _pickImage() async {
     final XFile? pickedFile = await _picker.pickImage(
@@ -38,11 +41,10 @@ class _HomesScreenState extends State<HomesScreen> {
     }
   }
 
-  Future<void> _uploadImage(XFile pickedFile) async {
+  Future<void> _uploadImage(File pickedFile) async {
     try {
       // Create a unique filename for the image
       String fileName = 'wounds/${DateTime.now().millisecondsSinceEpoch}.jpg';
-
       // Upload the image to Firebase Storage
       TaskSnapshot uploadTask = await FirebaseStorage.instance
           .ref(fileName)
@@ -51,13 +53,17 @@ class _HomesScreenState extends State<HomesScreen> {
       // Get the download URL
       String downloadUrl = await uploadTask.ref.getDownloadURL();
 
-      // Save the image URL to Firestore
-      // await FirebaseFirestore.instance.collection('users').doc(userId).collection('photos').add({
-      //   'url': downloadUrl,
-      //   'uploadedAt': Timestamp.now(),
-      // });
+      await FirebaseFirestore.instance.collection('users').doc(_auth.currentUser!.uid).collection('photos').add({
+        'url': downloadUrl,
+        'uploadedAt': Timestamp.now(),
+      });
+
+      setState(() {
+        _image = null;
+      });
 
       print("Image uploaded successfully. URL: $downloadUrl");
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Image Uploaded Successfully!')));
     } catch (e) {
       print("Error uploading image: $e");
     }
@@ -334,7 +340,7 @@ class _HomesScreenState extends State<HomesScreen> {
                               ),
                               child: const Center(
                                 child: Text(
-                                  'Upload New Wound Photo',
+                                  'Upload New Wound Image',
                                   style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold,
@@ -345,7 +351,9 @@ class _HomesScreenState extends State<HomesScreen> {
                             ),
                           )
                         : GestureDetector(
-                            onTap: () {}, // Trigger image picking on tap
+                            onTap: () {
+                              _uploadImage(_image!);
+                            }, // Trigger image picking on tap
                             child: Container(
                               height: MediaQuery.of(context).size.height * 0.08,
                               width: MediaQuery.of(context).size.width * 0.9,
@@ -390,7 +398,55 @@ class _HomesScreenState extends State<HomesScreen> {
                         : Container(),
                   ],
                 ),
-              )
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 15),
+                child: Divider(),
+              ),
+              GestureDetector(
+                onTap: () {
+                  Navigator.of(context).push(
+                      MaterialPageRoute(builder: (context) => SelfHelpPage()));
+                },
+                child: Container(
+                  padding: EdgeInsets.all(12),
+                  margin: EdgeInsets.all(18),
+                  decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [Colors.deepPurple, Colors.deepPurpleAccent],
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                      ),
+                      borderRadius: BorderRadius.circular(20)),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.help_center_outlined,
+                        color: Colors.white,
+                        size: 35,
+                      ),
+                      SizedBox(
+                        width: 20,
+                      ),
+                      Column(
+                        children: [
+                          Text(
+                            'Self Help',
+                            style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white),
+                          ),
+                          Text(
+                            'Explore new information and stay updated',
+                            style: TextStyle(color: Colors.white, fontSize: 14),
+                          )
+                        ],
+                      )
+                    ],
+                  ),
+                ),
+              ),
             ],
           ),
         ),
@@ -436,7 +492,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           child: Icon(
             Icons.notifications,
             size: 30,
-            color: Colors.white, // Change this to `primaryColor` if necessary
+            color: Colors.white, // Change this to primaryColor if necessary
           ),
         ),
       ],
